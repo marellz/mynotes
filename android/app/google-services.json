@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "684592731113",
+    "project_id": "marellz-mynotes",
+    "storage_bucket": "marellz-mynotes.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:684592731113:android:e4cd6736eaedc953567178",
+        "android_client_info": {
+          "package_name": "com.daudi.mynotes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcrlPZnSCll1vJXL4B5iHTNnHNXJh81fI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
