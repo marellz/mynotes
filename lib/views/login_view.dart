@@ -65,17 +65,20 @@ class _LoginViewState extends State<LoginView> {
                 onPressed: () async {
                   final String email = _email.text;
                   final String password = _password.text;
-      
+
                   try {
                     final UserCredential userCredential =
                         await FirebaseAuth.instance.signInWithEmailAndPassword(
                             email: email, password: password);
-      
-                    if(userCredential.user != null){
-                      // Navigator.of(context).pushAndRemoveUntil('', predicate)
-                      // todo: do something after login
-                      devtools.log(userCredential.toString());
+
+                    if (userCredential.user != null) {
+                      if (context.mounted) {
+                        Navigator.of(context)
+                            .pushNamedAndRemoveUntil('/notes', (_) => false);
+                      }
                     }
+
+                    // todo: throw something.
                   } on FirebaseAuthException catch (e) {
                     //
                     if (e.code == 'invalid-credential') {
@@ -97,8 +100,8 @@ class _LoginViewState extends State<LoginView> {
                 const Text('Not registered yet?'),
                 TextButton(
                     onPressed: () {
-                      Navigator.of(context)
-                          .pushNamedAndRemoveUntil('/register', (route) => false);
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                          '/register', (route) => false);
                     },
                     child: const Text('Register now')),
               ],
