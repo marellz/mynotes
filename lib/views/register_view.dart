@@ -1,7 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'dart:developer' as devtools show log;
-
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/utilities/error_dialog.dart';
 
@@ -69,7 +67,7 @@ class _RegisterViewState extends State<RegisterView> {
                   final String email = _email.text;
                   final String password = _password.text;
 
-                  if(email == '' || password == ''){
+                  if (email == '' || password == '') {
                     showErrorDialog(context, 'Missing email/password');
                     return;
                   }
@@ -82,8 +80,11 @@ class _RegisterViewState extends State<RegisterView> {
 
                     if (userCredential.user != null) {
                       if (context.mounted) {
-                        Navigator.of(context)
-                            .pushNamedAndRemoveUntil(routeNotes, (_) => false);
+                        final user = FirebaseAuth.instance.currentUser;
+                        await user?.sendEmailVerification();
+                        if (context.mounted) {
+                          Navigator.of(context).pushNamed(routeVerifyEmail);
+                        }
                       }
                     }
                   } on FirebaseAuthException catch (e) {
