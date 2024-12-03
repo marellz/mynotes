@@ -1,7 +1,6 @@
-// ignore_for_file: avoid_print
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'dart:developer' as devtools show log;
 
 class VerifyEmailView extends StatefulWidget {
   const VerifyEmailView({super.key});
@@ -31,9 +30,9 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                     await user?.sendEmailVerification();
                   } on FirebaseAuthException catch (e) {
                     if (e.code == 'too-many-requests') {
-                      print('You\'ve clicked too many times');
+                      devtools.log('You\'ve clicked too many times');
                     } else {
-                      print('[${e.code}: ${e.message}]');
+                      devtools.log('[${e.code}: ${e.message}]');
                     }
                   }
                 },
@@ -44,7 +43,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                   try {
                     await FirebaseAuth.instance.signOut();
                   } on FirebaseAuthException catch (e) {
-                    print(e);
+                    devtools.log(e.message ?? e.toString());
                   }
                 },
                 child: const Text('Logout'),

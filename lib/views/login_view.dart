@@ -1,7 +1,6 @@
-// ignore_for_file: avoid_print
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'dart:developer' as devtools show log;
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -67,23 +66,25 @@ class _LoginViewState extends State<LoginView> {
                   final String email = _email.text;
                   final String password = _password.text;
       
-                  print({email, password});
-      
                   try {
                     final UserCredential userCredential =
                         await FirebaseAuth.instance.signInWithEmailAndPassword(
                             email: email, password: password);
       
-                    print(userCredential);
+                    if(userCredential.user != null){
+                      // Navigator.of(context).pushAndRemoveUntil('', predicate)
+                      // todo: do something after login
+                      devtools.log(userCredential.toString());
+                    }
                   } on FirebaseAuthException catch (e) {
                     //
                     if (e.code == 'invalid-credential') {
-                      print('Invalid credentials!');
+                      devtools.log('Invalid credentials!');
                     } else {
-                      print('[${e.code}]:${e.message}');
+                      devtools.log('[${e.code}]:${e.message}');
                     }
                   } catch (e) {
-                    print(e);
+                    devtools.log(e.toString());
                   }
                 },
                 style: const ButtonStyle(

@@ -1,7 +1,6 @@
-// ignore_for_file: avoid_print
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'dart:developer' as devtools show log;
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -67,25 +66,24 @@ class _RegisterViewState extends State<RegisterView> {
                   final String email = _email.text;
                   final String password = _password.text;
       
-                  print({email, password});
-      
                   try {
                     final UserCredential userCredential = await FirebaseAuth
                         .instance
                         .createUserWithEmailAndPassword(
                             email: email, password: password);
       
-                    print(userCredential);
+                    devtools.log(userCredential.toString());
+
                   } on FirebaseAuthException catch (e) {
                     if (e.code == 'weak-password') {
-                      print('The password provided is too weak.');
+                      devtools.log('The password provided is too weak.');
                     } else if (e.code == 'email-already-in-use') {
-                      print('The account already exists for that email.');
+                      devtools.log('The account already exists for that email.');
                     } else if (e.code == 'invalid-email') {
-                      print('The email provided is invalid.');
+                      devtools.log('The email provided is invalid.');
                     }
                   } catch (e) {
-                    print(e);
+                    devtools.log(e.toString());
                   }
                 },
                 style: const ButtonStyle(
