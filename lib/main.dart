@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:mynotes/firebase_options.dart';
 import 'package:mynotes/views/login_view.dart';
+import 'package:mynotes/views/notes_view.dart';
 import 'package:mynotes/views/register_view.dart';
 import 'package:mynotes/views/verify_view.dart';
+import 'package:mynotes/views/welcome_view.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +20,7 @@ void main() {
     routes: {
       '/login': (context) => const LoginView(),
       '/register': (context) => const RegisterView(),
+      '/notes': (context) =>const NotesView()
     },
   ));
 }
@@ -66,7 +69,6 @@ class HomePage extends StatelessWidget {
             case ConnectionState.done:
               final user = FirebaseAuth.instance.currentUser;
               if (user == null) {
-                // todo: do welcome instead
                 return const LoginView();
               }
 
@@ -74,7 +76,7 @@ class HomePage extends StatelessWidget {
                 return const VerifyEmailView();
               }
 
-              return const NotesView();
+              return const WelcomeView();
 
             default:
               return const CircularProgressIndicator();
@@ -85,69 +87,7 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class NotesView extends StatefulWidget {
-  const NotesView({super.key});
 
-  @override
-  State<NotesView> createState() => _NotesViewState();
-}
-
-class _NotesViewState extends State<NotesView> {
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}
-
-class WelcomeView extends StatelessWidget {
-  const WelcomeView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        const Center(
-          child: Column(
-            children: [
-              Text(
-                'Hello!',
-                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Text(
-                'Welcome to mynotes app!',
-                style: TextStyle(fontSize: 20),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextButton(
-                onPressed: () {
-                  Navigator.of(context)
-                      .pushNamedAndRemoveUntil('/login', (route) => false);
-                },
-                child: const Text('Login')),
-            TextButton(
-                onPressed: () {
-                  Navigator.of(context)
-                      .pushNamedAndRemoveUntil('/register', (route) => false);
-                },
-                child: const Text('Register')),
-          ],
-        )
-      ],
-    );
-  }
-}
 
 Future<bool> showLogoutDialog(BuildContext context) {
   return showDialog(
