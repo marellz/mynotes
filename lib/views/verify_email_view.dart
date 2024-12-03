@@ -45,6 +45,8 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                   },
                   child: const Text('Resend email verification'),
                 ),
+
+                // todo: have a way of confirming.
                 TextButton(
                   onPressed: () async {
                     Navigator.of(context).pushNamedAndRemoveUntil(routeHome, (_)=> false);
