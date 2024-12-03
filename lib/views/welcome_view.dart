@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mynotes/constants/routes.dart';
 
 class WelcomeBanner extends StatelessWidget {
   const WelcomeBanner({super.key});
@@ -38,7 +39,7 @@ class WelcomeActions extends StatelessWidget {
           TextButton(
               onPressed: () {
                 Navigator.of(context)
-                    .pushNamedAndRemoveUntil('/notes', (route) => false);
+                    .pushNamedAndRemoveUntil(routeNotes, (route) => false);
               },
               child: const Text('Go to my notes'))
         ],
@@ -50,13 +51,13 @@ class WelcomeActions extends StatelessWidget {
           TextButton(
               onPressed: () {
                 Navigator.of(context)
-                    .pushNamedAndRemoveUntil('/login', (route) => false);
+                    .pushNamedAndRemoveUntil(routeLogin, (route) => false);
               },
               child: const Text('Login')),
           TextButton(
               onPressed: () {
                 Navigator.of(context)
-                    .pushNamedAndRemoveUntil('/register', (route) => false);
+                    .pushNamedAndRemoveUntil(routeRegister, (route) => false);
               },
               child: const Text('Register')),
         ],
