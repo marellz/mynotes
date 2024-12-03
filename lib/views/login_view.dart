@@ -75,18 +75,27 @@ class _LoginViewState extends State<LoginView> {
                   }
 
                   try {
-                    final UserCredential userCredential =
-                        await FirebaseAuth.instance.signInWithEmailAndPassword(
-                            email: email, password: password);
+                    await FirebaseAuth.instance.signInWithEmailAndPassword(
+                        email: email, password: password);
 
-                    if (userCredential.user != null) {
+                    final user = FirebaseAuth.instance.currentUser;
+
+                    if (user == null) {
+                      // todo: throw something.
+                      return;
+                    }
+
+                    if (!user.emailVerified) {
+                      await user.sendEmailVerification();
+                      if (context.mounted) {
+                        Navigator.of(context).pushNamed(routeVerifyEmail);
+                      }
+                    } else {
                       if (context.mounted) {
                         Navigator.of(context)
                             .pushNamedAndRemoveUntil(routeNotes, (_) => false);
                       }
                     }
-
-                    // todo: throw something.
                   } on FirebaseAuthException catch (e) {
                     //
                     if (e.code == 'invalid-credential') {
