@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/utilities/error_dialog.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -68,6 +69,11 @@ class _LoginViewState extends State<LoginView> {
                   final String email = _email.text;
                   final String password = _password.text;
 
+                  if (email == '' || password == '') {
+                    showErrorDialog(context, 'Missing email/password');
+                    return;
+                  }
+
                   try {
                     final UserCredential userCredential =
                         await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -84,12 +90,20 @@ class _LoginViewState extends State<LoginView> {
                   } on FirebaseAuthException catch (e) {
                     //
                     if (e.code == 'invalid-credential') {
-                      devtools.log('Invalid credentials!');
+                      if (context.mounted) {
+                        await showErrorDialog(context, 'Invalid credentials!');
+                      }
                     } else {
+                      if (context.mounted) {
+                        await showErrorDialog(
+                            context, e.message ?? 'An unknown error');
+                      }
                       devtools.log('[${e.code}]:${e.message}');
                     }
                   } catch (e) {
-                    devtools.log(e.toString());
+                    if (context.mounted) {
+                      await showErrorDialog(context, e.toString());
+                    }
                   }
                 },
                 style: const ButtonStyle(
