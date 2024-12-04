@@ -1,6 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mynotes/constants/auth_errors.dart';
 import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/services/auth/auth_exceptions.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/utilities/error_dialog.dart';
 
 class LoginView extends StatefulWidget {
@@ -73,18 +75,19 @@ class _LoginViewState extends State<LoginView> {
                   }
 
                   try {
-                    await FirebaseAuth.instance.signInWithEmailAndPassword(
-                        email: email, password: password);
+                    await AuthService.firebase()
+                        .logIn(email: email, password: password);
 
-                    final user = FirebaseAuth.instance.currentUser;
+                    final user = AuthService.firebase().currentUser;
 
                     if (user == null) {
-                      // todo: throw something.
-                      return;
+                      throw UserNotLoggedInException();
                     }
 
-                    if (!user.emailVerified) {
-                      await user.sendEmailVerification();
+                    if (!user.isEmailVerified) {
+
+                      await AuthService.firebase().sendEmailVerification();
+
                       if (context.mounted) {
                         Navigator.of(context).pushNamed(routeVerifyEmail);
                       }
@@ -94,17 +97,14 @@ class _LoginViewState extends State<LoginView> {
                             .pushNamedAndRemoveUntil(routeNotes, (_) => false);
                       }
                     }
-                  } on FirebaseAuthException catch (e) {
-                    //
-                    String errorMessage;
-                    if (e.code == 'invalid-credential') {
-                      errorMessage = "Invalid credentials";
-                    } else {
-                      errorMessage = "An Unknown error.";
-                    }
-
+                  } on InvalidCredentialsException catch (_) {
                     if (context.mounted) {
-                      await showErrorDialog(context, errorMessage);
+                      await showErrorDialog(context, errorInvalidCredentials);
+                    }
+                    //
+                  } on GenericAuthException catch (_) {
+                    if (context.mounted) {
+                      await showErrorDialog(context, errorGenericError);
                     }
                   } catch (e) {
                     if (context.mounted) {

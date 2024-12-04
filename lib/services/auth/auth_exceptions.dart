@@ -12,3 +12,5 @@ class InvalidEmailException implements Exception {}
 class GenericAuthException implements Exception {}
 
 class UserNotLoggedInException implements Exception {}
+
+class ClickedTooManyTimesException implements Exception {}

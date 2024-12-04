@@ -1,8 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'dart:developer' as devtools show log;
-
+import 'package:mynotes/constants/auth_errors.dart';
 import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/services/auth/auth_exceptions.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
+import 'package:mynotes/utilities/error_dialog.dart';
 
 class VerifyEmailView extends StatefulWidget {
   const VerifyEmailView({super.key});
@@ -12,7 +13,7 @@ class VerifyEmailView extends StatefulWidget {
 }
 
 class _VerifyEmailViewState extends State<VerifyEmailView> {
-  final user = FirebaseAuth.instance.currentUser;
+  final user = AuthService.firebase().currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -32,14 +33,22 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
               children: [
                 TextButton(
                   onPressed: () async {
-                    final user = FirebaseAuth.instance.currentUser;
                     try {
-                      await user?.sendEmailVerification();
-                    } on FirebaseAuthException catch (e) {
-                      if (e.code == 'too-many-requests') {
-                        devtools.log('You\'ve clicked too many times');
-                      } else {
-                        devtools.log('[${e.code}: ${e.message}]');
+                      await AuthService.firebase().sendEmailVerification();
+                    } on ClickedTooManyTimesException catch (_) {
+                      if (context.mounted) {
+                        await showErrorDialog(
+                          context,
+                          errorClickedTooManyTimes,
+                        );
+                      }
+                    } on GenericAuthException catch (_) {
+                      if (context.mounted) {
+                        await showErrorDialog(context, errorGenericError);
+                      }
+                    } catch (_) {
+                      if (context.mounted) {
+                        await showErrorDialog(context, errorGenericError);
                       }
                     }
                   },
@@ -49,7 +58,8 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                 // todo: have a way of confirming.
                 TextButton(
                   onPressed: () async {
-                    Navigator.of(context).pushNamedAndRemoveUntil(routeHome, (_)=> false);
+                    Navigator.of(context)
+                        .pushNamedAndRemoveUntil(routeHome, (_) => false);
                   },
                   child: const Text('Go back home'),
                 )
