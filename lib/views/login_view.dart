@@ -1,7 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'dart:developer' as devtools show log;
-
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/utilities/error_dialog.dart';
 
@@ -98,16 +96,15 @@ class _LoginViewState extends State<LoginView> {
                     }
                   } on FirebaseAuthException catch (e) {
                     //
+                    String errorMessage;
                     if (e.code == 'invalid-credential') {
-                      if (context.mounted) {
-                        await showErrorDialog(context, 'Invalid credentials!');
-                      }
+                      errorMessage = "Invalid credentials";
                     } else {
-                      if (context.mounted) {
-                        await showErrorDialog(
-                            context, e.message ?? 'An unknown error');
-                      }
-                      devtools.log('[${e.code}]:${e.message}');
+                      errorMessage = "An Unknown error.";
+                    }
+
+                    if (context.mounted) {
+                      await showErrorDialog(context, errorMessage);
                     }
                   } catch (e) {
                     if (context.mounted) {

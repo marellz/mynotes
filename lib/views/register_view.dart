@@ -88,26 +88,25 @@ class _RegisterViewState extends State<RegisterView> {
                       }
                     }
                   } on FirebaseAuthException catch (e) {
-                    if (e.code == 'weak-password') {
-                      if (context.mounted) {
-                        showErrorDialog(
-                            context, 'The password provided is too weak.');
-                      }
-                    } else if (e.code == 'email-already-in-use') {
-                      if (context.mounted) {
-                        showErrorDialog(context,
-                            'The account already exists for that email.');
-                      }
-                    } else if (e.code == 'invalid-email') {
-                      if (context.mounted) {
-                        showErrorDialog(
-                            context, 'The email provided is invalid.');
-                      }
-                    } else {
-                      if (context.mounted) {
-                        await showErrorDialog(
-                            context, e.message ?? 'An unknown error');
-                      }
+                    String errorMessage;
+                    switch (e.code) {
+                      case 'weak-password':
+                        errorMessage = 'The password provided is too weak.';
+                        break;
+                      case 'email-already-in-use':
+                        errorMessage =
+                            'The account already exists for that email.';
+                        break;
+                      case 'invalid-email':
+                        errorMessage = 'The email provided is invalid.';
+                        break;
+
+                      default:
+                        errorMessage = 'An unknown error';
+                    }
+
+                    if (context.mounted) {
+                      showErrorDialog(context, errorMessage);
                     }
                   } catch (e) {
                     if (context.mounted) {
