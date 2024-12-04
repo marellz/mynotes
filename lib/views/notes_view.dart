@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/enums/menu_actions.dart';
 
 class NotesView extends StatefulWidget {
   const NotesView({super.key});
@@ -42,8 +43,6 @@ class _NotesViewState extends State<NotesView> {
         body: Container());
   }
 }
-
-enum MenuAction { logout }
 
 Future<bool> showLogoutDialog(BuildContext context) {
   return showDialog(
