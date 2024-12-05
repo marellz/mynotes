@@ -1,11 +1,21 @@
-import 'package:flutter/foundation.dart';
-import 'package:mynotes/services/crud/db_exceptions.dart';
+// import 'package:flutter/foundation.dart';
+import 'package:mynotes/constants/database.dart';
 import 'package:mynotes/services/crud/crud_exceptions.dart';
+import 'package:mynotes/services/db/models/database_note.dart';
+import 'package:mynotes/services/db/models/database_user.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:mynotes/services/db/database_exceptions.dart';
 import 'package:path/path.dart';
 
-class NotesService {
+abstract class DatabaseService {
+
+  ///
+  ///
+  /// DATABASE
+  ///
+  ///
+  
   Database? _db;
 
   Database _getDatabaseOrThrow() {
@@ -47,7 +57,14 @@ class NotesService {
     }
   }
 
-  Future<DatabaseUser> createUser({required String email}) async {
+
+  /// 
+  /// 
+  /// USER
+  /// 
+  /// 
+
+   Future<DatabaseUser> createUser({required String email}) async {
     final db = _getDatabaseOrThrow();
     final results = await db.query(
       userTable,
@@ -94,7 +111,14 @@ class NotesService {
     }
   }
 
-  Future<DatabaseNote> createNote({required DatabaseUser owner}) async {
+
+  /// 
+  /// 
+  /// NOTES
+  /// 
+  /// 
+
+    Future<DatabaseNote> createNote({required DatabaseUser owner}) async {
     final db = _getDatabaseOrThrow();
     final dbUser = await getUser(email: owner.email);
 
@@ -189,89 +213,3 @@ class NotesService {
     return db.delete(notesTable);
   }
 }
-
-@immutable
-class DatabaseUser {
-  final int id;
-  final String email;
-
-  const DatabaseUser({
-    required this.id,
-    required this.email,
-  });
-
-  DatabaseUser.fromRow(Map<String, Object?> map)
-      : id = map[idColumn] as int,
-        email = map[emailColumn] as String;
-
-  @override
-  String toString() => 'Person, ID = $id, email = $email';
-
-  @override
-  bool operator ==(covariant DatabaseUser other) => id == other.id;
-
-  @override
-  int get hashCode => id.hashCode;
-}
-
-class DatabaseNote {
-  final int id;
-  final int userId;
-  final String? title;
-  final String text;
-  final bool isSynced;
-
-  DatabaseNote({
-    required this.id,
-    required this.userId,
-    this.title = '',
-    required this.text,
-    this.isSynced = false,
-  });
-
-  DatabaseNote.fromRow(Map<String, Object?> map)
-      : id = map[idColumn] as int,
-        userId = map[userIdColumn] as int,
-        title = map[titleColumn] as String,
-        text = map[textColumn] as String,
-        isSynced = (map[isSyncedColumn] as int) == 1 /** ? true : false */;
-
-  String titled() => title != null ? 'titled \'$title\', ' : '';
-
-  @override
-  String toString() =>
-      'Note, ID = $id, userId = $userId, ${titled}isSyncedWithCloud = $isSynced';
-
-  @override
-  bool operator ==(covariant DatabaseNote other) => id == other.id;
-
-  @override
-  int get hashCode => id.hashCode;
-}
-
-const dbName = 'notes.db';
-const notesTable = 'notes';
-const userTable = 'user';
-
-const createUserTable = '''CREATE TABLE IF NOT EXISTS "user" (
-        "id" INTEGER NOT NULL,
-        "email" TEXT NOT NULL UNIQUE,
-        "PRIMARY KEY("id" AUTOINCREMENT)
-      );''';
-
-const createNotesTable = '''CREATE TABLE IF NOT EXISTS "notes" (
-        "id"	INTEGER NOT NULL,
-        "user_id"	INTEGER NOT NULL,
-        "title"	TEXT,
-        "text"	TEXT NOT NULL,
-        "is_synced"	INTEGER NOT NULL DEFAULT 0,
-        PRIMARY KEY("id" AUTOINCREMENT),
-        FOREIGN KEY("user_id") REFERENCES "user"("id")
-      )''';
-
-const idColumn = 'id';
-const emailColumn = 'email';
-const userIdColumn = 'user_id';
-const titleColumn = 'title';
-const textColumn = 'text';
-const isSyncedColumn = 'is_synced';
