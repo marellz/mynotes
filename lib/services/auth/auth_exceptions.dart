@@ -13,4 +13,6 @@ class GenericAuthException implements Exception {}
 
 class UserNotLoggedInException implements Exception {}
 
+class UserNotFoundException implements Exception {}
+
 class ClickedTooManyTimesException implements Exception {}
