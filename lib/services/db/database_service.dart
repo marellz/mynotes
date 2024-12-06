@@ -75,6 +75,18 @@ abstract class DatabaseService {
   ///
   ///
 
+  Future<DatabaseUser> getOrCreateUser({required String email}) async {
+    try {
+      final user = await getUser(email: email);
+      return user;
+    } on CouldNotFindUserException catch (_) {
+      final createdUser = await createUser(email: email);
+      return createdUser;
+    } catch (e){
+      rethrow;
+    }
+  }
+
   Future<DatabaseUser> createUser({required String email}) async {
     final db = _getDatabaseOrThrow();
     final results = await db.query(
@@ -183,7 +195,7 @@ abstract class DatabaseService {
       throw CouldNotFindNoteException();
     }
 
-    final note =  DatabaseNote.fromRow(notes.first);
+    final note = DatabaseNote.fromRow(notes.first);
     _notes.removeWhere((note) => note.id == id);
     _notes.add(note);
     _notesStreamController.add(_notes);
@@ -207,15 +219,14 @@ abstract class DatabaseService {
 
     if (updateCount == 0) {
       throw CouldNotUpdateNoteException();
-    } 
-      final updatedNote = await getNote(id: note.id);
+    }
+    final updatedNote = await getNote(id: note.id);
 
-      _notes.removeWhere((updatedNote) => updatedNote.id == note.id);
-      _notes.add(updatedNote);
-      _notesStreamController.add(_notes);
+    _notes.removeWhere((updatedNote) => updatedNote.id == note.id);
+    _notes.add(updatedNote);
+    _notesStreamController.add(_notes);
 
-      return updatedNote;
-    
+    return updatedNote;
   }
 
   Future<void> deleteNote({required int id}) async {
@@ -242,6 +253,5 @@ abstract class DatabaseService {
     _notesStreamController.add(_notes);
 
     return numberDeleted;
-
   }
 }
