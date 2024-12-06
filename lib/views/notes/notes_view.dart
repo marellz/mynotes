@@ -36,6 +36,9 @@ class _NotesViewState extends State<NotesView> {
         appBar: AppBar(
           title: const Text('Notes'),
           actions: [
+            IconButton(onPressed: (){
+              Navigator.of(context).pushNamed(routeNewNote);
+            }, icon: const Icon(Icons.add)),
             PopupMenuButton(
               onSelected: (value) async {
                 switch (value) {
@@ -58,7 +61,7 @@ class _NotesViewState extends State<NotesView> {
                       value: MenuAction.logout, child: Text('Logout'))
                 ];
               },
-            )
+            ),
           ],
         ),
         body: FutureBuilder(
